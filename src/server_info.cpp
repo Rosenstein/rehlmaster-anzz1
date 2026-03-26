@@ -171,7 +171,7 @@ unsigned short CServerInfo::parseAppId()
 	if (fp) {
 		char line[256];
 
-		if (fgets(line, sizeof line, fp)) {
+		if (fgets(line, sizeof(line), fp)) {
 			trimbuf(line);
 			appId = atoi(line);
 		}
@@ -205,7 +205,7 @@ void CServerInfo::parseAppVersion()
 	if (fp) {
 		char line[256];
 
-		while (fgets(line, sizeof line, fp)) {
+		while (fgets(line, sizeof(line), fp)) {
 			char* value = strchr(line, '=');
 			if (!value) {
 				continue;
@@ -214,12 +214,13 @@ void CServerInfo::parseAppVersion()
 			*value++ = '\0';
 			trimbuf(line);
 			trimbuf(value);
+			chrreplace(value, '\\', ' ');
 
-			if (!strcmp(line, "PatchVersion=")) {
+			if (!strcmp(line, "PatchVersion")) {
 				_snprintf(m_appVersion, sizeof(m_appVersion)-1, "%s/Stdio", value);
 				m_appVersion[sizeof(m_appVersion)-1] = 0;
 			}
-			else if (!strcmp(line, "ProductName=")) {
+			else if (!strcmp(line, "ProductName")) {
 				strncpy(m_productName, value, sizeof(m_productName)-1);
 				m_productName[sizeof(m_productName)-1] = 0;
 			}

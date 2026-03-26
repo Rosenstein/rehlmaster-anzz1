@@ -68,6 +68,13 @@ char* trimbuf(char *str) {
 	return str;
 }
 
+char* chrreplace(char *str, char a, char b) {
+	for (char *p = str; *p != 0; p++) {
+		if(*p == a) *p = b;
+	}
+	return str;
+}
+
 unsigned long host2ip(const char *hostname) {
 	struct addrinfo hints, *info;
 	memset(&hints, 0, sizeof(hints));
@@ -80,8 +87,7 @@ unsigned long host2ip(const char *hostname) {
 	return ip;
 }
 
-void ServerPrintf(char *fmt, ...)
-{
+void ServerPrintf(char *fmt, ...) {
 	va_list args;
 	char buffer[512];
 
@@ -94,4 +100,33 @@ void ServerPrintf(char *fmt, ...)
 
 	// Print to server console
 	SERVER_PRINT(buffer);
+}
+
+FILE* cfg_open(const char *fname, const char *fmode) {
+	char path[MAX_PATH];
+	const char* ppath = gpMetaUtilFuncs->pfnGetPluginPath(PLID);
+
+	if (ppath) {
+		strncpy(path, ppath, sizeof(path) - 1);
+		path[sizeof(path) - 1] = 0;
+
+		char* s = strrchr(path, '/');
+		if (s) {
+			size_t maxlen = sizeof(path) - 1 - (s + 1 - path);
+			strncpy(s + 1, fname, maxlen);
+			path[sizeof(path) - 1] = 0;
+
+			FILE *fl = fopen(path, fmode);
+			if (fl) return fl;
+		}
+	}
+
+	char gamedir[MAX_PATH];
+	g_engfuncs.pfnGetGameDir(gamedir);
+	snprintf(path, sizeof(path), "./%s/%s", gamedir, fname);
+	FILE *fl = fopen(path, fmode);
+	if (fl) return fl;
+
+	snprintf(path, sizeof(path), "./%s", fname);
+	return fopen(path, fmode);
 }

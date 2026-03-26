@@ -11,7 +11,6 @@ cvar_t cv_sv_master[5] = {
 	{"sv_master4", "", FCVAR_EXTDLL, 0.0f, NULL},
 	{"sv_master5", "", FCVAR_EXTDLL, 0.0f, NULL}
 };
-
 cvar_t* pcv_sv_master[5];
 
 void craft_master_reply(uint8* buf, uint32* len, uint32 challenge)
@@ -101,11 +100,11 @@ void SV_Frame_hook(IRehldsHook_SV_Frame* chain) {
 }
 
 void rehlmaster_serverActivate() {
-	FILE* fp = fopen("rehlmaster.cfg", "rt");
+	FILE* fp = cfg_open("rehlmaster.cfg", "rt");
 	if (fp) {
 		char line[1024];
 
-		while (fgets(line, sizeof(line)-1, fp)) {
+		while (fgets(line, sizeof(line), fp)) {
 
 			trimbuf(line);
 
